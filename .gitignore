@@ -1,0 +1,17 @@
+# 依赖
+node_modules/
+__pycache__/
+*.pyc
+
+# 编辑器
+.vscode/
+.idea/
+*.sublime-workspace
+
+# 系统
+.DS_Store
+Thumbs.db
+
+# 临时文件
+*.log
+.pi/

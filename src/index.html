@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>廖老爷中国象棋 · 双人对战 / 人机对战 / AI 支招</title>
+  <link rel="stylesheet" href="./css/style.css" />
+</head>
+<body data-theme="wood" data-piece="classic">
+  <div class="app">
+    <!-- 顶部栏 -->
+    <header class="topbar">
+      <div class="brand">
+        <img class="brand-avatar" src="resources/liaolord.gif" alt="廖老爷" title="廖老爷" />
+        <span class="brand-title">廖老爷 · 中国象棋</span>
+      </div>
+      <nav class="mode-switch">
+        <button data-mode="pvp" class="mode-btn active">双人对战</button>
+        <button data-mode="pve" class="mode-btn">人机对战</button>
+      </nav>
+      <div class="topbar-actions">
+        <button id="btn-new" class="btn btn-ghost" title="重新开始">新对局</button>
+        <button id="btn-settings" class="btn btn-ghost" title="设置">⚙ 设置</button>
+      </div>
+    </header>
+
+    <!-- 主体 -->
+    <main class="main">
+      <!-- 左侧信息栏 -->
+      <aside class="sidebar sidebar-left">
+        <!-- 廖老爷形象卡 -->
+        <section class="panel persona-card">
+          <div class="persona-head">
+            <img class="persona-avatar" src="resources/liaolord.gif" alt="廖老爷" title="廖老爷" />
+            <div class="persona-meta">
+              <div class="persona-name">廖老爷</div>
+              <div class="persona-role">象棋阁主 · 你的棋评人</div>
+            </div>
+          </div>
+          <div class="persona-motto">棋如人生，落子无悔。</div>
+        </section>
+
+        <section class="panel">
+          <div class="panel-title">对局状态</div>
+          <div class="status-row">
+            <span class="dot red" id="turn-dot"></span>
+            <span id="turn-indicator" class="turn-indicator red">红方</span>
+          </div>
+          <div id="status-text" class="status-text">轮到 红方 走子</div>
+        </section>
+
+        <!-- 廖老爷评语 -->
+        <section class="panel persona-comment-panel">
+          <div class="panel-title">
+            <img class="tiny-avatar" src="resources/liaolord.gif" alt="廖老爷" />
+            廖老爷评棋
+          </div>
+          <div id="persona-comment" class="persona-comment">廖老爷已就座，静候二位落子。</div>
+        </section>
+
+        <section class="panel" id="ai-panel">
+          <div class="panel-title">操作</div>
+          <div class="action-grid">
+            <button id="btn-undo" class="btn btn-primary">悔棋</button>
+            <button id="btn-hint" class="btn btn-accent">AI 支招</button>
+          </div>
+          <div class="counter-row">
+            <span id="undo-count" class="hint-note"></span>
+            <span id="hint-count" class="hint-note"></span>
+          </div>
+        </section>
+      </aside>
+
+      <!-- 棋盘 -->
+      <section class="board-area">
+        <div id="board" class="board-container"></div>
+      </section>
+
+      <!-- 右侧信息栏 -->
+      <aside class="sidebar sidebar-right">
+        <!-- 人机模式：廖老爷作为 AI 对手 -->
+        <section class="panel ai-opponent-card" id="ai-opponent">
+          <div class="ai-opp-head">
+            <img class="ai-opp-avatar" src="resources/liaolord.gif" alt="廖老爷" title="廖老爷" />
+            <div class="ai-opp-meta">
+              <div class="ai-opp-name">廖老爷</div>
+              <div class="ai-opp-role">你的对手 · 执<span id="ai-opp-side">黑</span></div>
+            </div>
+          </div>
+          <div class="ai-opp-status" id="ai-opp-status">廖老爷正襟危坐，等你落子。</div>
+        </section>
+
+        <section class="panel panel-grow">
+          <div class="panel-title">走子记录</div>
+          <div id="move-list" class="move-list"></div>
+        </section>
+      </aside>
+    </main>
+  </div>
+
+  <!-- 设置面板 -->
+  <div id="settings-overlay" class="overlay">
+    <div class="modal settings-modal">
+      <div class="modal-head">
+        <h2>设置</h2>
+        <button id="btn-close-settings" class="icon-btn">✕</button>
+      </div>
+      <div class="settings-tabs">
+        <button data-tab="ai" class="tab active">AI 设置</button>
+        <button data-tab="undo" class="tab">悔棋设置</button>
+        <button data-tab="hint" class="tab">AI 支招</button>
+        <button data-tab="ui" class="tab">界面与走棋</button>
+        <button data-tab="persona" class="tab">廖老爷</button>
+      </div>
+      <div class="settings-body">
+        <!-- AI 设置 -->
+        <div data-tab-panel="ai">
+          <p class="section-desc">配置大模型接口，用于人机对战与 AI 支招。所有 AI 功能均通过此处的 base-url 与 api-key 调用。</p>
+          <label class="field">
+            <span class="field-label">Base URL</span>
+            <input id="set-ai-base" type="text" placeholder="https://open.bigmodel.cn/api/paas/v4" />
+          </label>
+          <label class="field">
+            <span class="field-label">API Key</span>
+            <div class="input-with-btn">
+              <input id="set-ai-key" type="password" placeholder="填写你的 API Key" />
+              <button id="btn-ai-toggle-key" class="icon-btn" title="显示/隐藏">👁</button>
+            </div>
+          </label>
+          <label class="field">
+            <span class="field-label">模型名称</span>
+            <input id="set-ai-model" type="text" placeholder="glm-4-flash" />
+          </label>
+          <div class="field-row">
+            <label class="field">
+              <span class="field-label">temperature</span>
+              <input id="set-ai-temp" type="number" step="0.1" min="0" max="2" />
+            </label>
+            <label class="field">
+              <span class="field-label">超时(ms)</span>
+              <input id="set-ai-timeout" type="number" step="1000" min="3000" />
+            </label>
+          </div>
+          <label class="field">
+            <span class="field-label">本地搜索深度（越大越强，1~3 推荐）</span>
+            <input id="set-ai-depth" type="number" min="1" max="4" step="1" />
+          </label>
+          <p class="section-desc">走子由「本地搜索引擎 + 大模型」共同决定：本地引擎负责精确算度与战术打点，大模型负责棋理与开局判断。深度 2 约看一回合，深度 3 更强但更慢。</p>
+          <div class="btn-row">
+            <button id="btn-ai-example" class="btn btn-ghost">填入智谱示例</button>
+            <button id="btn-ai-test" class="btn btn-primary">测试连接</button>
+          </div>
+          <div class="example-box">
+            <div class="example-title">智谱 AI 示例（GLM）</div>
+            <ul>
+              <li>Base URL：<code>https://open.bigmodel.cn/api/paas/v4</code></li>
+              <li>模型：<code>glm-4-flash</code> / <code>glm-4-plus</code></li>
+              <li>API Key：前往 <code>open.bigmodel.cn</code> 控制台获取</li>
+            </ul>
+            <p class="warn">注意：前端直连会暴露 API Key，仅建议在本地或可信环境使用。</p>
+          </div>
+        </div>
+
+        <!-- 悔棋设置 -->
+        <div data-tab-panel="undo" style="display:none">
+          <label class="field checkbox">
+            <input id="set-undo-enabled" type="checkbox" />
+            <span>允许悔棋</span>
+          </label>
+          <label class="field">
+            <span class="field-label">每次悔棋步数（双人模式）</span>
+            <input id="set-undo-steps" type="number" min="1" max="4" />
+          </label>
+          <label class="field checkbox">
+            <input id="set-undo-limit" type="checkbox" />
+            <span>限制悔棋次数</span>
+          </label>
+          <label class="field">
+            <span class="field-label">最大悔棋次数</span>
+            <input id="set-undo-max" type="number" min="1" max="99" />
+          </label>
+          <p class="section-desc">人机模式下，悔棋会自动回退到轮到你走子的状态。</p>
+        </div>
+
+        <!-- AI 支招 -->
+        <div data-tab-panel="hint" style="display:none">
+          <label class="field checkbox">
+            <input id="set-hint-enabled" type="checkbox" />
+            <span>启用 AI 支招（双人对战模式）</span>
+          </label>
+          <label class="field checkbox">
+            <input id="set-hint-arrow" type="checkbox" />
+            <span>显示支招箭头</span>
+          </label>
+          <label class="field checkbox">
+            <input id="set-hint-limit" type="checkbox" />
+            <span>限制每局支招次数</span>
+          </label>
+          <label class="field">
+            <span class="field-label">每局最大支招次数</span>
+            <input id="set-hint-max" type="number" min="1" max="99" />
+          </label>
+          <p class="section-desc">在双人对战中点击「AI 支招」，会由大模型给出当前走子的建议，不自动落子。</p>
+        </div>
+
+        <!-- 界面与走棋 -->
+        <div data-tab-panel="ui" style="display:none">
+          <label class="field">
+            <span class="field-label">棋盘主题</span>
+            <select id="set-ui-theme">
+              <option value="wood">经典木纹</option>
+              <option value="ink">水墨丹青</option>
+              <option value="dark">暗夜模式</option>
+              <option value="green">竹青</option>
+            </select>
+          </label>
+          <label class="field">
+            <span class="field-label">棋子样式</span>
+            <select id="set-ui-piecemode">
+              <option value="classic">经典立体</option>
+              <option value="flat">扁平简约</option>
+            </select>
+          </label>
+          <label class="field checkbox">
+            <input id="set-ui-coord" type="checkbox" />
+            <span>显示坐标</span>
+          </label>
+          <label class="field checkbox">
+            <input id="set-ui-last" type="checkbox" />
+            <span>高亮上一步</span>
+          </label>
+          <label class="field checkbox">
+            <input id="set-ui-movelist" type="checkbox" />
+            <span>显示走子记录</span>
+          </label>
+          <label class="field checkbox">
+            <input id="set-ui-anim" type="checkbox" />
+            <span>走棋动画</span>
+          </label>
+          <label class="field checkbox">
+            <input id="set-ui-effect" type="checkbox" />
+            <span>走棋 / 吃子特效</span>
+          </label>
+        </div>
+
+        <!-- 廖老爷 -->
+        <div data-tab-panel="persona" style="display:none">
+          <div class="persona-about">
+            <img class="persona-about-avatar" src="resources/liaolord.gif" alt="廖老爷" />
+            <div>
+              <div class="persona-about-name">廖老爷</div>
+              <div class="persona-about-desc">象棋阁主，本程序的个性形象与棋评人。</div>
+            </div>
+          </div>
+          <label class="field checkbox">
+            <input id="set-persona-enabled" type="checkbox" />
+            <span>启用「廖老爷」评语</span>
+          </label>
+          <label class="field checkbox">
+            <input id="set-persona-show-avatar" type="checkbox" />
+            <span>显示「廖老爷」形象</span>
+          </label>
+          <label class="field checkbox">
+            <input id="set-persona-ai-voice" type="checkbox" />
+            <span>AI 支招以「廖老爷」口吻播报</span>
+          </label>
+          <label class="field checkbox">
+            <input id="set-persona-comment-move" type="checkbox" />
+            <span>双人对战中点评每步走子</span>
+          </label>
+          <label class="field">
+            <span class="field-label">评语来源</span>
+            <select id="set-persona-source">
+              <option value="ai">完全由 AI 生成（推荐）</option>
+              <option value="local">本地句库</option>
+            </select>
+            <span class="hint-note">AI：每步（或关键着法）调用大模型，评语贴合局面、随机关变，但需联网且有 token 消耗；失败会自动降级本地句库。<br>本地：使用内置句库，零延迟、可离线，但评语种类有限、重复度高。</span>
+          </label>
+          <label class="field">
+            <span class="field-label">AI 评语范围</span>
+            <select id="set-persona-scope">
+              <option value="key">仅关键着法（吃子/将军/失误，省 token）</option>
+              <option value="all">每步都评（解说最完整）</option>
+            </select>
+            <span class="hint-note">关键着法：仅在吃子、将军、妙手、明显失误时调用 AI，普通走子不点评，token 消耗低。<br>每步都评：每一步都生成评语，解说最完整，但 API 请求与 token 消耗最高、延迟更明显。</span>
+          </label>
+          <label class="field checkbox">
+            <input id="set-persona-ai-self" type="checkbox" />
+            <span>人机模式：廖老爷走子后自评</span>
+          </label>
+          <span class="hint-note">开启后，人机对战中廖老爷每走一步会额外生成一句「自评」（多 1 次 API 请求）；关闭则只播报落子。</span>
+          <label class="field">
+            <span class="field-label">评语展示时长（毫秒）</span>
+            <input id="set-persona-duration" type="number" min="1500" max="15000" step="500" />
+          </label>
+          <p class="section-desc">「廖老爷」会在对局中点评走子、将军与胜负，并在 AI 支招时以其口吻给出建议；评语会明确标注点评对象（红方／黑方／廖老爷自评）。形象取自 resources 文件夹。</p>
+        </div>
+      </div>
+      <div class="modal-foot">
+        <button id="btn-settings-reset" class="btn btn-ghost">恢复默认</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 结算弹窗 -->
+  <div id="result-overlay" class="overlay">
+    <div class="modal result-modal">
+      <h2>对局结束</h2>
+      <p id="result-text"></p>
+      <div class="modal-foot">
+        <button id="btn-result-close" class="btn btn-ghost">查看棋盘</button>
+        <button id="btn-result-new" class="btn btn-primary">再来一局</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 提示 -->
+  <div id="toast" class="toast"></div>
+
+  <script type="module" src="./js/app.js"></script>
+</body>
+</html>

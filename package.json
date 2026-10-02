@@ -1,0 +1,25 @@
+{
+  "name": "liaolord-chinese-chess",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "廖老爷中国象棋 - 纯前端中国象棋，支持双人对战、人机对战与 AI 支招",
+  "scripts": {
+    "start": "node tools/server.js 8080 src",
+    "dev": "node tools/server.js 8080 src",
+    "serve": "node tools/server.js 8080 src",
+    "test": "node tests/run-all.mjs",
+    "test:engine": "node tests/engine.test.mjs",
+    "test:ai": "node tests/ai.test.mjs",
+    "test:limits": "node tests/limits.test.mjs",
+    "test:persona": "node tests/persona.test.mjs"
+  },
+  "keywords": [
+    "chinese-chess",
+    "xiangqi",
+    "web",
+    "game",
+    "ai"
+  ],
+  "license": "MIT"
+}
