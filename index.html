@@ -4,14 +4,14 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <title>廖老爷中国象棋 · 双人对战 / 人机对战 / AI 支招</title>
-  <link rel="stylesheet" href="./css/style.css" />
+  <link rel="stylesheet" href="./src/css/style.css" />
 </head>
 <body data-theme="wood" data-piece="classic">
   <div class="app">
     <!-- 顶部栏 -->
     <header class="topbar">
       <div class="brand">
-        <img class="brand-avatar" src="resources/liaolord.gif" alt="廖老爷" title="廖老爷" />
+        <img class="brand-avatar" src="src/resources/liaolord.gif" alt="廖老爷" title="廖老爷" />
         <span class="brand-title">廖老爷 · 中国象棋</span>
       </div>
       <nav class="mode-switch">
@@ -31,7 +31,7 @@
         <!-- 廖老爷形象卡 -->
         <section class="panel persona-card">
           <div class="persona-head">
-            <img class="persona-avatar" src="resources/liaolord.gif" alt="廖老爷" title="廖老爷" />
+            <img class="persona-avatar" src="src/resources/liaolord.gif" alt="廖老爷" title="廖老爷" />
             <div class="persona-meta">
               <div class="persona-name">廖老爷</div>
               <div class="persona-role">象棋阁主 · 你的棋评人</div>
@@ -52,7 +52,7 @@
         <!-- 廖老爷评语 -->
         <section class="panel persona-comment-panel">
           <div class="panel-title">
-            <img class="tiny-avatar" src="resources/liaolord.gif" alt="廖老爷" />
+            <img class="tiny-avatar" src="src/resources/liaolord.gif" alt="廖老爷" />
             廖老爷评棋
           </div>
           <div id="persona-comment" class="persona-comment">廖老爷已就座，静候二位落子。</div>
@@ -81,7 +81,7 @@
         <!-- 人机模式：廖老爷作为 AI 对手 -->
         <section class="panel ai-opponent-card" id="ai-opponent">
           <div class="ai-opp-head">
-            <img class="ai-opp-avatar" src="resources/liaolord.gif" alt="廖老爷" title="廖老爷" />
+            <img class="ai-opp-avatar" src="src/resources/liaolord.gif" alt="廖老爷" title="廖老爷" />
             <div class="ai-opp-meta">
               <div class="ai-opp-name">廖老爷</div>
               <div class="ai-opp-role">你的对手 · 执<span id="ai-opp-side">黑</span></div>
@@ -246,7 +246,7 @@
         <!-- 廖老爷 -->
         <div data-tab-panel="persona" style="display:none">
           <div class="persona-about">
-            <img class="persona-about-avatar" src="resources/liaolord.gif" alt="廖老爷" />
+            <img class="persona-about-avatar" src="src/resources/liaolord.gif" alt="廖老爷" />
             <div>
               <div class="persona-about-name">廖老爷</div>
               <div class="persona-about-desc">象棋阁主，本程序的个性形象与棋评人。</div>
@@ -317,6 +317,6 @@
   <!-- 提示 -->
   <div id="toast" class="toast"></div>
 
-  <script type="module" src="./js/app.js"></script>
+  <script type="module" src="./src/js/app.js"></script>
 </body>
 </html>

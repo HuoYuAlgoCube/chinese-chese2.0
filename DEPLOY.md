@@ -1,6 +1,7 @@
 # 免费部署指南
 
-本项目是**纯静态站点**（HTML/CSS/JS，无后端），发布目录为 **`src/`**。
+本项目是**纯静态站点**（HTML/CSS/JS，无后端），页面入口 `index.html` 已在**项目根目录**，
+静态资源位于 `src/`，因此发布目录为 **项目根目录（`.`）**。
 以下四种方案均可**免费**部署，任选其一。
 
 ---
@@ -30,7 +31,7 @@
    |--------|-----|
    | Framework preset | `None` |
    | Build command | *(留空)* |
-   | Build output directory | `src` |
+   | Build output directory | `.`（项目根目录） |
 
 4. 点击 **Save and Deploy**，几十秒后即可访问 `https://<项目名>.pages.dev`。
 
@@ -45,7 +46,7 @@
 **方式 A：拖拽部署（最快）**
 
 1. 打开 [app.netlify.com/drop](https://app.netlify.com/drop)
-2. 把 **`src` 文件夹**直接拖进页面
+2. 把**整个项目文件夹**直接拖进页面（需包含根目录的 `index.html` 与 `src/`）
 3. 立即获得 `https://<随机名>.netlify.app` 网址
 
 **方式 B：Git 部署**
@@ -54,7 +55,7 @@
 2. Netlify → **Add new site** → **Import an existing project** → 选仓库
 3. 构建配置：
    - Build command：*(留空)*
-   - Publish directory：`src`
+   - Publish directory：`.`（项目根目录）
 4. Deploy
 
 > 项目已包含 `netlify.toml`，会自动识别发布目录。
@@ -69,7 +70,7 @@
    - Framework Preset：`Other`
    - Root Directory：*(留空)*
    - Build Command：*(留空)*
-   - Output Directory：`src`
+   - Output Directory：`.`（项目根目录）
 4. Deploy
 
 > 项目已包含 `vercel.json`，会自动识别。
@@ -84,7 +85,7 @@
 2. 仓库 **Settings** → **Pages** → **Build and deployment** → Source 选 **GitHub Actions**
 3. 项目已包含 `.github/workflows/deploy.yml`，推送后会自动：
    - 先运行全部单元测试
-   - 通过后发布 `src/` 到 GitHub Pages
+   - 通过后发布项目到 GitHub Pages
 4. 部署完成后访问 `https://<用户名>.github.io/<仓库名>/`
 
 > 注意：GitHub Pages 默认域名在国内访问可能较慢。
@@ -96,7 +97,7 @@
 1. 注册 [Gitee](https://gitee.com/)（需实名认证）
 2. 新建仓库并推送代码
 3. 仓库 → **服务** → **Gitee Pages**
-4. 部署目录填写 `src`，点击启动
+4. 部署目录填写项目根目录 `.`，点击启动
 5. 获得 `https://<用户名>.gitee.io/<仓库名>/`
 
 > Gitee Pages 免费版每次更新代码后需手动点击"更新"。
@@ -105,12 +106,12 @@
 
 ## 本地验证部署包
 
-部署前可先在本地确认 `src/` 能独立运行：
+部署前可先在本地确认项目能独立运行：
 
 ```bash
 npm start
 # 或
-node tools/server.js 8080 src
+node tools/server.js 8080
 ```
 
 浏览器打开 http://localhost:8080 检查：
@@ -176,11 +177,11 @@ export default {
 ## 常见问题
 
 **Q：部署后打开白屏？**
-A：确认发布目录是 `src`（不是项目根目录）。项目根目录的 `index.html` 不存在，
-入口是 `src/index.html`。
+A：确认发布目录是**项目根目录**（而不是仅 `src`）。页面入口 `index.html` 位于项目根目录，
+静态资源位于 `src/`（如 `src/css/`、`src/js/`、`src/resources/`）。
 
 **Q：图片（廖老爷形象）不显示？**
-A：确认 `src/resources/liaolord.gif` 已被部署。托管平台应能自动处理 `resources/` 路径。
+A：确认 `src/resources/liaolord.gif` 已随项目一起部署。页面引用路径为 `src/resources/liaolord.gif`。
 
 **Q：AI 功能报错 "网络请求失败"？**
 A：多为跨域（CORS）或 Base URL 填写有误。检查：

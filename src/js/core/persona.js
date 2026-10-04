@@ -11,8 +11,8 @@ export const PERSONA = {
   name: '廖老爷',
   fullName: '廖老爷',
   title: '象棋阁主',
-  // 形象资源路径（相对 src/index.html）
-  avatar: 'resources/liaolord.gif',
+  // 形象资源路径（相对项目根 index.html）
+  avatar: 'src/resources/liaolord.gif',
   // 备用静态形象（若动图加载失败时显示）
   fallbackText: '廖',
   motto: '棋如人生，落子无悔——廖老爷陪你下到底。',

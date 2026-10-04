@@ -511,7 +511,7 @@ class App {
       el.id = 'thinking';
       el.className = 'thinking';
       el.innerHTML =
-        '<img class="tiny-avatar" src="resources/liaolord.gif" alt="廖老爷" />' +
+        '<img class="tiny-avatar" src="src/resources/liaolord.gif" alt="廖老爷" />' +
         '<span class="spinner"></span>廖老爷思考中…';
       this.aiPanelEl.appendChild(el);
     }

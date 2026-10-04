@@ -294,13 +294,24 @@ export function findBestMove(game, side, depth = 2) {
  * @returns {Map<string, number>} key "fromRow,fromCol,toRow,toCol" -> 分数
  */
 export function scoreMoves(game, side, depth = 1) {
+  return scoreBoardMoves(game.board, side, depth);
+}
+
+/**
+ * 对给定局面的所有合法走法打分排序（纯棋盘入口，供主线程与 Web Worker 共用）
+ * @param {Board} board 当前棋盘（不会被修改）
+ * @param {string} side 行棋方
+ * @param {number} depth 搜索深度
+ * @returns {Map<string, number>} key "fromRow,fromCol,toRow,toCol" -> 分数
+ */
+export function scoreBoardMoves(board, side, depth = 1) {
   const scores = new Map();
-  const moves = game.getLegalMoves(side);
+  const moves = generateLegalMoves(board, side);
   // 同一次排序共用一个置换表，提升多走法评估的效率
   const tt = new Map();
 
   for (const m of moves) {
-    const clone = game.board.clone();
+    const clone = board.clone();
     clone.set(m.to.row, m.to.col, clone.get(m.from.row, m.from.col));
     clone.set(m.from.row, m.from.col, null);
 

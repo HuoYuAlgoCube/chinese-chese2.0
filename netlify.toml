@@ -1,5 +1,5 @@
 [build]
-  publish = "src"
+  publish = "."
   command = ""
 
 [[headers]]
@@ -10,6 +10,6 @@
 
 # 确保 .gif 等静态资源被正确提供
 [[headers]]
-  for = "/resources/*"
+  for = "/src/resources/*"
   [headers.values]
     Cache-Control = "public, max-age=86400"

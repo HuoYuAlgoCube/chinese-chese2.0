@@ -53,11 +53,11 @@ rem 后台延迟 2 秒打开浏览器（用独立 cmd 执行，避免嵌套引�
 start "open-browser" /min cmd /c "timeout /t 2 /nobreak >nul & start "" "http://localhost:!FOUND_PORT!""
 
 if /i "!SERVER!"=="node" (
-    node "%~dp0tools\server.js" !FOUND_PORT! src
+    node "%~dp0tools\server.js" !FOUND_PORT!
 ) else if /i "!SERVER!"=="python" (
-    python -m http.server !FOUND_PORT! --directory "%~dp0src"
+    python -m http.server !FOUND_PORT! --directory "%~dp0"
 ) else (
-    py -m http.server !FOUND_PORT! --directory "%~dp0src"
+    py -m http.server !FOUND_PORT! --directory "%~dp0"
 )
 
 echo.

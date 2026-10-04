@@ -12,7 +12,7 @@
 
 ## 运行方式（重要）
 
-> ⚠️ **请勿直接双击 `src/index.html` 打开！**
+> ⚠️ **请勿直接双击 `index.html` 打开！**
 >
 > 本项目使用 ES Modules，浏览器在 `file://` 协议下会因 CORS 限制**拒绝加载 JS 模块**，
 > 表现为：**看不到棋盘、按钮全部点不动**。必须通过本地服务器访问。
@@ -25,17 +25,17 @@
 
 ```bash
 # 方式 A：使用项目自带的零依赖服务器（需要 Node.js）
-node tools/server.js 8080 src
+node tools/server.js 8080
 ```
 
 ```bash
 # 方式 B：使用 Python
-python -m http.server 8080 --directory src
+python -m http.server 8080 --directory .
 ```
 
 ```bash
 # 方式 C：使用 npx
-npx serve src
+npx serve .
 ```
 
 然后浏览器访问 **http://localhost:8080**（`file://` 方式不可用）。
@@ -104,8 +104,8 @@ npx serve src
 ## 目录结构
 
 ```
+index.html                  # 页面入口（项目根目录）
 src/
-├── index.html              # 页面入口
 ├── resources/              # 人物形象资源（「廖老爷」）
 │   └── liaolord.gif
 ├── css/

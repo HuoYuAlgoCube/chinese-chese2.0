@@ -7,6 +7,7 @@ import { isInCheck, generatePieceMoves } from '../core/rules.js';
 import { moveNotation as moveNotationRaw } from '../core/notation.js';
 import { findBestMove, scoreMoves, evaluateBoard } from './search.js';
 import { createAIClient } from './client.js';
+import { scoreBoardMovesAsync } from './searchRunner.js';
 
 /** 坐标 -> 人类可读 */
 export function posName(side, row, col) {
@@ -112,12 +113,33 @@ export function buildMovesText(game, side, searchTags, orderedMoves) {
 }
 
 /**
- * 用本地搜索对走法清单排序，返回排序后的走法列表与注释
+ * 用本地搜索对走法清单排序，返回排序后的走法列表与注释（同步版）
+ * 注意：Alpha-Beta 搜索是 CPU 密集计算，在浏览器主线程直接调用会阻塞界面；
+ * 浏览器端请优先使用 rankMovesBySearchAsync（在 Web Worker 中执行）。
+ * 本同步版保留给 Node 等无 Worker 的环境（含测试）使用。
  * @returns {{ordered:Array, annotations:Map<string,string>, bestKey:string|null}}
  */
 export function rankMovesBySearch(game, side, depth = 2) {
+  return rankFromScores(game, side, scoreMoves(game, side, depth));
+}
+
+/**
+ * 用本地搜索对走法清单排序（异步版，评分在 Web Worker 中计算，避免阻塞主线程）
+ * @returns {Promise<{ordered:Array, annotations:Map<string,string>, bestKey:string|null}>}
+ */
+export async function rankMovesBySearchAsync(game, side, depth = 2) {
+  const scores = await scoreBoardMovesAsync(game.board, side, depth);
+  return rankFromScores(game, side, scores);
+}
+
+/**
+ * 根据走法评分排序并生成注释（不涉及搜索，开销极小，供同步/异步两版共用）
+ * @param {Game} game
+ * @param {string} side
+ * @param {Map<string, number>} scores
+ */
+function rankFromScores(game, side, scores) {
   const moves = game.getLegalMoves(side);
-  const scores = scoreMoves(game, side, depth);
   const annotated = moves.map((m) => {
     const key = `${m.from.row},${m.from.col},${m.to.row},${m.to.col}`;
     return { move: m, key, score: scores.get(key) ?? -Infinity };
@@ -438,7 +460,7 @@ export async function requestAIMove(game, side, settings) {
 
   // 本地搜索分析：给出评分排序，作为大模型的参考（大模型负责最终决策与理由）
   const searchDepth = settings.get('ai.searchDepth', 2);
-  const { annotations, ordered, bestKey } = rankMovesBySearch(game, side, searchDepth);
+  const { annotations, ordered, bestKey } = await rankMovesBySearchAsync(game, side, searchDepth);
   const bestHint = bestKey
     ? (() => {
         const top = ordered[0];
@@ -510,7 +532,7 @@ export async function requestHint(game, side, settings) {
   const inCheck = isInCheck(game.board, side);
 
   const searchDepth = settings.get('ai.searchDepth', 2);
-  const { annotations, ordered, bestKey } = rankMovesBySearch(game, side, searchDepth);
+  const { annotations, ordered, bestKey } = await rankMovesBySearchAsync(game, side, searchDepth);
   const bestHint = bestKey
     ? (() => {
         const top = ordered[0];

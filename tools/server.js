@@ -11,7 +11,7 @@ import { fileURLToPath } from 'node:url';
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 const port = Number(process.argv[2]) || 8080;
-const rootDir = path.resolve(process.argv[3] || path.join(__dirname, '..', 'src'));
+const rootDir = path.resolve(process.argv[3] || path.join(__dirname, '..'));
 
 const MIME = {
   '.html': 'text/html; charset=utf-8',
@@ -70,7 +70,7 @@ server.listen(port, () => {
 server.on('error', (e) => {
   if (e.code === 'EADDRINUSE') {
     console.error(`\n  端口 ${port} 已被占用，请换一个端口：`);
-    console.error(`    node tools/server.js ${port + 1} src\n`);
+    console.error(`    node tools/server.js ${port + 1}\n`);
   } else {
     console.error(e);
   }

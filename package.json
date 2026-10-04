@@ -5,9 +5,9 @@
   "type": "module",
   "description": "廖老爷中国象棋 - 纯前端中国象棋，支持双人对战、人机对战与 AI 支招",
   "scripts": {
-    "start": "node tools/server.js 8080 src",
-    "dev": "node tools/server.js 8080 src",
-    "serve": "node tools/server.js 8080 src",
+    "start": "node tools/server.js 8080",
+    "dev": "node tools/server.js 8080",
+    "serve": "node tools/server.js 8080",
     "test": "node tests/run-all.mjs",
     "test:engine": "node tests/engine.test.mjs",
     "test:ai": "node tests/ai.test.mjs",

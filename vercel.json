@@ -2,11 +2,11 @@
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "version": 2,
   "public": false,
-  "outputDirectory": "src",
+  "outputDirectory": ".",
   "cleanUrls": true,
   "headers": [
     {
-      "source": "/resources/(.*)",
+      "source": "/src/resources/(.*)",
       "headers": [
         { "key": "Cache-Control", "value": "public, max-age=86400" }
       ]
