@@ -117,6 +117,9 @@ class App {
     const oppSide = this.$('#ai-opp-side');
     if (oppSide) oppSide.textContent = this.aiSide === SIDE.RED ? '红' : '黑';
 
+    // 显示/隐藏面板会改变可用空间，重新计算棋盘尺寸
+    this.renderer.scheduleLayout();
+
     this._updateCounters();
   }
 

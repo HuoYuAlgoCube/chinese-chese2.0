@@ -39,15 +39,26 @@ export class BoardRenderer {
     this._lastLayout = { w: 0, h: 0, cell: 0 };
     this._resizeRaf = null;
 
-    window.addEventListener('resize', () => {
-      if (this._resizeRaf) cancelAnimationFrame(this._resizeRaf);
-      this._resizeRaf = requestAnimationFrame(() => {
-        this._resizeRaf = null;
-        this.layout();
-      });
-    });
+    window.addEventListener('resize', () => this._scheduleLayout());
+    window.addEventListener('orientationchange', () => this._scheduleLayout());
+    if (window.visualViewport) {
+      window.visualViewport.addEventListener('resize', () => this._scheduleLayout());
+    }
   }
 
+  /** 公开：请求下一帧重新计算布局（DOM 显隐变化后调用） */
+  scheduleLayout() {
+    this._scheduleLayout();
+  }
+
+  /** 将 layout 合并到下一帧，避免高频重排 */
+  _scheduleLayout() {
+    if (this._resizeRaf) cancelAnimationFrame(this._resizeRaf);
+    this._resizeRaf = requestAnimationFrame(() => {
+      this._resizeRaf = null;
+      this.layout();
+    });
+  }
   /**
    * 计算布局（响应式：以 min(宽, 高*比例) 为准）
    */

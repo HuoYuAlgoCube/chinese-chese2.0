@@ -73,13 +73,20 @@ html, body {
   color: var(--text);
   font-family: "PingFang SC", "Microsoft YaHei", "Hiragino Sans GB", system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
+  -webkit-text-size-adjust: 100%;
   transition: background 0.25s, color 0.25s;
+}
+
+body {
+  overscroll-behavior: none;
 }
 
 .app {
   display: flex;
   flex-direction: column;
   height: 100vh;
+  /* 移动端浏览器工具栏会遮挡 100vh，优先使用动态视口高度 */
+  height: 100dvh;
   overflow: hidden;
 }
 
@@ -95,7 +102,6 @@ html, body {
   z-index: 10;
   flex-shrink: 0;
 }
-
 .brand { display: flex; align-items: center; gap: 10px; }
 
 .brand-logo {
@@ -406,6 +412,7 @@ body.hide-persona-avatar .tiny-avatar {
   padding: 14px;
   gap: 14px;
   overflow: hidden;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .sidebar {
@@ -505,6 +512,7 @@ body[data-theme="dark"] .turn-indicator.black { color: #c9ced6; }
   min-height: 0;
   display: grid;
   place-items: center;
+  touch-action: manipulation;
   /* 关键：裁掉溢出，防止棋盘尺寸反馈放大 */
   overflow: hidden;
   position: relative;
@@ -545,6 +553,9 @@ body[data-theme="dark"] .board-surface {
   cursor: pointer;
   pointer-events: auto;
   user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+  touch-action: manipulation;
   transition: box-shadow 0.15s, transform 0.12s, filter 0.15s;
   will-change: left, top;
   z-index: 10;
@@ -728,7 +739,12 @@ body[data-theme="dark"] .mv.black { color: #c9ced6; }
   gap: 4px;
   padding: 10px 14px 0;
   border-bottom: 1px solid var(--border);
+  overflow-x: auto;
+  flex-wrap: nowrap;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
 }
+.settings-tabs::-webkit-scrollbar { display: none; }
 .tab {
   border: none;
   background: transparent;
@@ -746,6 +762,34 @@ body[data-theme="dark"] .mv.black { color: #c9ced6; }
   overflow-y: auto;
   min-height: 340px;
   max-height: 56vh;
+}
+
+/* 移动端：弹窗占满屏幕、输入框排除 iOS 自动缩放 */
+@media (max-width: 640px) {
+  .overlay { padding: 8px; align-items: flex-start; }
+  .settings-modal {
+    width: 100%;
+    max-width: 100%;
+    max-height: calc(100dvh - 16px);
+    height: 100%;
+  }
+  .settings-body {
+    min-height: 0;
+    flex: 1;
+    max-height: none;
+    padding: 14px 16px;
+    -webkit-overflow-scrolling: touch;
+  }
+  .modal-head { padding: 12px 16px; }
+  .modal-foot { padding: 12px 16px; }
+  .field input[type="text"],
+  .field input[type="password"],
+  .field input[type="number"],
+  .field select { font-size: 16px; }
+  .result-modal { width: 100%; padding: 22px 18px; }
+  .field-row { grid-template-columns: 1fr; gap: 0; }
+  .btn-row { flex-wrap: wrap; }
+  .btn-row .btn { flex: 1; }
 }
 
 .modal-foot {
@@ -853,21 +897,109 @@ body[data-theme="dark"] .example-box code { background: rgba(255,255,255,0.1); }
 .toast.info { border-left-color: var(--primary); }
 
 /* ---------- 响应式 ---------- */
+
+/* 触控设备：增大点击热区、消除点击高亮 */
+@media (hover: none) and (pointer: coarse) {
+  .piece { -webkit-tap-highlight-color: transparent; }
+  .piece:hover { transform: translate(-50%, -50%); }
+  .btn, .mode-btn, .tab, .icon-btn { -webkit-tap-highlight-color: transparent; }
+  .btn { padding: 11px 18px; }
+  .mode-btn { padding: 9px 16px; }
+  .tab { padding: 11px 12px; }
+  .icon-btn { padding: 8px 10px; }
+}
+
+/* 平板 / 小屏桌面 */
 @media (max-width: 900px) {
   .sidebar { width: 150px; }
   .sidebar-right { display: none; }
 }
 
+/* 手机竖屏：改为纵向流式布局，允许滚动，保证棋盘完整可见 */
 @media (max-width: 640px) {
-  .main { flex-direction: column; padding: 8px; gap: 8px; }
-  .sidebar-left { width: 100%; flex-direction: row; }
-  .sidebar-left .panel { flex: 1; }
-  .topbar { flex-wrap: wrap; gap: 8px; padding: 8px 12px; }
+  .app {
+    height: auto;
+    min-height: 100dvh;
+    overflow: visible;
+  }
+
+  .topbar {
+    position: sticky;
+    top: 0;
+    flex-wrap: wrap;
+    gap: 8px;
+    padding: 8px 12px;
+  }
+
+  .brand-title { font-size: 14px; letter-spacing: 1px; }
+  .brand-avatar { width: 30px; height: 30px; }
+
+  .mode-switch { margin-left: 0; order: 3; width: 100%; }
+  .mode-btn { flex: 1; text-align: center; padding: 9px 10px; font-size: 13px; }
+
+  .topbar-actions { margin-left: auto; gap: 6px; }
+  .topbar-actions .btn { padding: 9px 12px; font-size: 13px; }
+
+  .main {
+    flex-direction: column;
+    padding: 8px;
+    gap: 8px;
+    overflow: visible;
+  }
+
+  /* 左侧信息栏拆为紧凑两列，放在棋盘上方 */
+  .sidebar-left {
+    width: 100%;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .sidebar-left .panel { flex: 1 1 calc(50% - 4px); padding: 10px; }
+  .sidebar-left .persona-card { flex: 1 1 calc(50% - 4px); }
+  .sidebar-left .persona-comment-panel { flex: 1 1 100%; }
+  .sidebar-left #ai-panel { flex: 1 1 100%; }
+
+  .persona-avatar { width: 40px; height: 40px; }
+  .persona-motto { display: none; }
+  .persona-comment { min-height: auto; }
+
+  /* 棋盘：宽度撑满，高度按 9:10 棋盘比例自适应 */
+  .board-area {
+    width: 100%;
+    min-height: 0;
+    height: auto;
+    aspect-ratio: 9 / 10;
+    flex: none;
+    padding: 4px 0;
+  }
+
+  .sidebar-right {
+    display: flex;
+    width: 100%;
+    flex-direction: column;
+  }
+  .panel-grow .move-list { max-height: 34vh; }
+}
+
+/* 超小屏微调 */
+@media (max-width: 380px) {
+  .sidebar-left .panel { flex: 1 1 100%; }
   .brand-title { display: none; }
-  .mode-switch { margin-left: 0; }
-  .mode-btn { padding: 6px 12px; font-size: 13px; }
-  .topbar-actions { margin-left: auto; }
-  .board-area { min-height: 55vh; }
+}
+
+/* 手机横屏：恢复左右分栏，棋盘居中 */
+@media (max-width: 900px) and (orientation: landscape) {
+  .main { flex-direction: row; padding: 8px; gap: 8px; overflow: hidden; }
+  .sidebar-left,
+  .sidebar-right { width: 140px; flex-shrink: 0; }
+  .sidebar-right { display: flex; }
+  .sidebar-left { flex-direction: column; }
+  .sidebar-left .panel,
+  .sidebar-left .persona-card,
+  .sidebar-left .persona-comment-panel,
+  .sidebar-left #ai-panel { flex: none; width: 100%; }
+  .board-area { aspect-ratio: auto; height: 100%; flex: 1; }
+  .panel-grow .move-list { max-height: none; }
 }
 
 /* ---------- 滚动条 ---------- */
@@ -875,3 +1007,19 @@ body[data-theme="dark"] .example-box code { background: rgba(255,255,255,0.1); }
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb { background: rgba(120, 110, 95, 0.35); border-radius: 3px; }
 ::-webkit-scrollbar-thumb:hover { background: rgba(120, 110, 95, 0.6); }
+
+/* ---------- 刘海屏安全区 ---------- */
+@supports (padding: env(safe-area-inset-left)) {
+  .topbar {
+    padding-left: calc(20px + env(safe-area-inset-left));
+    padding-right: calc(20px + env(safe-area-inset-right));
+    padding-top: calc(10px + env(safe-area-inset-top));
+  }
+  .main {
+    padding-left: calc(14px + env(safe-area-inset-left));
+    padding-right: calc(14px + env(safe-area-inset-right));
+  }
+  .toast {
+    bottom: calc(28px + env(safe-area-inset-bottom));
+  }
+}
